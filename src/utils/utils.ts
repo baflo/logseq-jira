@@ -315,7 +315,7 @@ export function getPropertiesFromBlockContent(srcBlock: BlockEntity) {
     .map(line => line.match(propertyLineRegex))
     .filter(m => m !== null)
     .map(([m, key, textValue]) => {
-      const formattedKey = kebabcaseToCacelCase(key.toLowerCase().replace(/[^a-z]/, ""));
+      const formattedKey = kebabcaseToCamelcase(key);
 
       return [key, srcBlock.properties![formattedKey]];
     }));
@@ -347,7 +347,7 @@ export function camelcaseToKebabCase(str: string): string {
 }
 
 
-export function kebabcaseToCacelCase(str: string): string {
+export function kebabcaseToCamelcase(str: string): string {
   return str.replace(/([a-z])-([a-z])/g, (_, a, b) => `${a}${b.toUpperCase()}`);
 }
 
