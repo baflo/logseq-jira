@@ -281,7 +281,7 @@ export function getIssuePageByKey(key: string) {
             [?p :block/name]
             [?p :block/properties ?props]
             [(get ?props :.pagetype) ?pagetype]
-            [(get ?props :key) ?key]
+            [(get ?props :jira.key) ?key]
             [(= ?pagetype ?pt)]
             [(= ?key ?k)]
           ]`, JSON.stringify(CONSTANTS.PAGE_TYPE_VALUE_JIRA_ISSUE), JSON.stringify(key));
@@ -337,7 +337,7 @@ export async function updateBlockProperties(block: BlockEntity, blockProperties:
 export function getIssuePageTypeProperties(issueKey: string): Record<string, string> {
   return {
     [CONSTANTS.PAGE_TYPE_PROPERTY]: CONSTANTS.PAGE_TYPE_VALUE_JIRA_ISSUE,
-    "key": issueKey
+    "jira.key": issueKey
   };
 }
 

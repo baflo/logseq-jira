@@ -212,7 +212,7 @@ async function updateJiraIssue(useSecondOrg: boolean, blockUUID?: string): Promi
 
     // extract issuekeys from content only and ignoring the properties    
     const contentText = removeProperties(value.split("\n")).join("\n")
-    const { key = "", externalUrl = "", link = "" } = currentBlock.properties ?? {};
+    const { "jira.key": key = "", "jira.external-url": externalUrl = "", "jira.link": link = "" } = currentBlock.properties ?? {};
     const issueKeys = extractIssueKeys(`${key} ${externalUrl} ${link} ${contentText}`);
 
     if (!issueKeys || issueKeys.length < 1) {
@@ -282,7 +282,7 @@ async function updateJiraIssueOnPaste(value: string, useSecondOrg: boolean): Pro
 
     // extract issuekeys from content only and ignoring the properties    
     const contentText = removeProperties(value.split("\n")).join("\n")
-    const { key = "", externalUrl = "", link = "" } = currentBlock.properties ?? {};
+    const { "jira.key": key = "", "jira.external-url": externalUrl = "", "jira.link": link = "" } = currentBlock.properties ?? {};
     const issueKeys = extractIssueKeys(`${key} ${externalUrl} ${link} ${contentText}`);
 
     if (!issueKeys || issueKeys.length < 1) {
@@ -469,17 +469,17 @@ function genProperties(properties: Data[string]): Record<string, string> {
 
   const propertyObject: Record<string, string> = {};
 
-  if (showLink) propertyObject.link = link;
-  if (showKey) propertyObject.key = key;
-  if (showLinkedKey) propertyObject["external-url"] = settings.enableOrgMode ? `[[${link}]][[${key}]]` : `[${key}](${link})`;
-  if (showSummary) propertyObject.summary = summary;
-  if (showAssignee) propertyObject.assignee = assignee;
-  if (showPriority) propertyObject.priority = priority;
-  if (showFixVersion) propertyObject['fix-version'] = fixVersion;
-  if (showStatus) propertyObject.status = status;
-  if (showReporter) propertyObject.reporter = reporter;
-  if (showResolution && resolution) propertyObject.resolution = resolution;
-  if (appendCustomTags) propertyObject.tags = appendCustomTags;
+  if (showLink) propertyObject["jira.link"] = link;
+  if (showKey) propertyObject["jira.key"] = key;
+  if (showLinkedKey) propertyObject["jira.external-url"] = settings.enableOrgMode ? `[[${link}]][[${key}]]` : `[${key}](${link})`;
+  if (showSummary) propertyObject["jira.summary"] = summary;
+  if (showAssignee) propertyObject["jira.assignee"] = assignee;
+  if (showPriority) propertyObject["jira.priority"] = priority;
+  if (showFixVersion) propertyObject["jira.fix-version"] = fixVersion;
+  if (showStatus) propertyObject["jira.status"] = status;
+  if (showReporter) propertyObject["jira.reporter"] = reporter;
+  if (showResolution && resolution) propertyObject["jira.resolution"] = resolution;
+  if (appendCustomTags) propertyObject["jira.tags"] = appendCustomTags;
 
   return propertyObject;
 }
