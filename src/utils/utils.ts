@@ -315,7 +315,7 @@ export function getPropertiesFromBlockContent(srcBlock: BlockEntity) {
     .map(line => line.match(propertyLineRegex))
     .filter(m => m !== null)
     .map(([m, key, textValue]) => {
-      const formattedKey = key.toLowerCase().replace(/[^a-z]/, "");
+      const formattedKey = kebabcaseToCacelCase(key.toLowerCase().replace(/[^a-z]/, ""));
 
       return [key, srcBlock.properties![formattedKey]];
     }));
@@ -326,7 +326,7 @@ export async function updateBlockProperties(block: BlockEntity, blockProperties:
   const firstPropertyLine = getFirstPropertyLine(allLines);
   const content = allLines.slice(0, firstPropertyLine).join("\n");
 
-  const existingProperties = block.properties || {};
+  const existingProperties = getPropertiesFromBlockContent(block) || {};
   const mergedProperties = { ...existingProperties, ...blockProperties };
 
   await logseq.Editor.updateBlock(block?.uuid, content, {
@@ -339,5 +339,15 @@ export function getIssuePageTypeProperties(issueKey: string): Record<string, str
     [CONSTANTS.PAGE_TYPE_PROPERTY]: CONSTANTS.PAGE_TYPE_VALUE_JIRA_ISSUE,
     "key": issueKey
   };
+}
+
+
+export function camelcaseToKebabCase(str: string): string {
+  return str.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
+}
+
+
+export function kebabcaseToCacelCase(str: string): string {
+  return str.replace(/([a-z])-([a-z])/g, (_, a, b) => `${a}${b.toUpperCase()}`);
 }
 
