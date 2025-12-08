@@ -326,7 +326,7 @@ export async function updateBlockProperties(block: BlockEntity, blockProperties:
   const firstPropertyLine = getFirstPropertyLine(allLines);
   const content = allLines.slice(0, firstPropertyLine).join("\n");
 
-  const existingProperties = getPropertiesFromBlockContent(block) || {};
+  const existingProperties = block.properties || {};
   const mergedProperties = { ...existingProperties, ...blockProperties };
 
   await logseq.Editor.updateBlock(block?.uuid, content, {
