@@ -212,8 +212,8 @@ async function updateJiraIssue(useSecondOrg: boolean, blockUUID?: string): Promi
 
     // extract issuekeys from content only and ignoring the properties    
     const contentText = removeProperties(value.split("\n")).join("\n")
-    const { key = "", linkedkey = "", link = "" } = currentBlock.properties ?? {};
-    const issueKeys = extractIssueKeys(`${key} ${linkedkey} ${link} ${contentText}`);
+    const { key = "", externalUrl = "", link = "" } = currentBlock.properties ?? {};
+    const issueKeys = extractIssueKeys(`${key} ${externalUrl} ${link} ${contentText}`);
 
     if (!issueKeys || issueKeys.length < 1) {
       logseq.UI.showMsg("Couldn't find any Jira issues.", 'error');
@@ -282,8 +282,8 @@ async function updateJiraIssueOnPaste(value: string, useSecondOrg: boolean): Pro
 
     // extract issuekeys from content only and ignoring the properties    
     const contentText = removeProperties(value.split("\n")).join("\n")
-    const { key = "", linkedkey = "", link = "" } = currentBlock.properties ?? {};
-    const issueKeys = extractIssueKeys(`${key} ${linkedkey} ${link} ${contentText}`);
+    const { key = "", externalUrl = "", link = "" } = currentBlock.properties ?? {};
+    const issueKeys = extractIssueKeys(`${key} ${externalUrl} ${link} ${contentText}`);
 
     if (!issueKeys || issueKeys.length < 1) {
       logseq.UI.showMsg("Couldn't find any Jira issues.", 'error');
@@ -471,7 +471,7 @@ function genProperties(properties: Data[string]): Record<string, string> {
 
   if (showLink) propertyObject.link = link;
   if (showKey) propertyObject.key = key;
-  if (showLinkedKey) propertyObject.linkedkey = settings.enableOrgMode ? `[[${link}]][[${key}]]` : `[${key}](${link})`;
+  if (showLinkedKey) propertyObject["external-url"] = settings.enableOrgMode ? `[[${link}]][[${key}]]` : `[${key}](${link})`;
   if (showSummary) propertyObject.summary = summary;
   if (showAssignee) propertyObject.assignee = assignee;
   if (showPriority) propertyObject.priority = priority;

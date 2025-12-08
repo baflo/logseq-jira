@@ -257,6 +257,16 @@ export function getFirstPropertyLine(lines: string[]) {
   return firstPropertyLine === -1 ? lines.length : firstPropertyLine;
 }
 
+/**
+ * Behavior of Logseq is that any line after the first property line that matches property pattern also is a property.
+ * However, if there is any interruption like non-property pattern or an empty line, all valid properties after that are ignored.
+ */
+export function getLastPropertyLine(lines: string[], firstPropLine = getFirstPropertyLine(lines)) {
+  const lastPropLine = lines.slice(firstPropLine).findIndex(line => !propertyLineRegex.test(line));
+
+  return (lastPropLine === -1 ? lines.length : lastPropLine) - 1;
+}
+
 export function removeProperties(allLines: string[]): string[] {
   const firstPropertyLine = getFirstPropertyLine(allLines);
   const contentLines = allLines.slice(0, firstPropertyLine);
@@ -293,17 +303,35 @@ export async function getPagePreBlock(pageName: PageEntity["name"]) {
   return preBlock;
 }
 
+
+
+export function getPropertiesFromBlockContent(srcBlock: BlockEntity) {
+  const lines: string[] = srcBlock.content.split("\n");
+  const firstPropertyLine = getFirstPropertyLine(lines);
+  const lastPropertyLine = getLastPropertyLine(lines, firstPropertyLine);
+
+  return Object.fromEntries(lines
+    .slice(firstPropertyLine, lastPropertyLine + 1)
+    .map(line => line.match(propertyLineRegex))
+    .filter(m => m !== null)
+    .map(([m, key, textValue]) => {
+      const formattedKey = key.toLowerCase().replace(/[^a-z]/, "");
+
+      return [key, srcBlock.properties![formattedKey]];
+    }));
+}
+
 export async function updateBlockProperties(block: BlockEntity, blockProperties: Record<string, string>) {
   const allLines = block.content.split("\n");
   const firstPropertyLine = getFirstPropertyLine(allLines);
   const content = allLines.slice(0, firstPropertyLine).join("\n");
 
-  await logseq.Editor.updateBlock(block?.uuid,
-    content,
-    {
-      properties: blockProperties
-    }
-  );
+  const existingProperties = getPropertiesFromBlockContent(block) || {};
+  const mergedProperties = { ...existingProperties, ...blockProperties };
+
+  await logseq.Editor.updateBlock(block?.uuid, content, {
+    properties: mergedProperties
+  });
 }
 
 export function getIssuePageTypeProperties(issueKey: string): Record<string, string> {
